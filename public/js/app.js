@@ -8,24 +8,29 @@ const formMsg = document.querySelector('.form-msg');
 const chat = document.querySelector('.chat');
 const msg = document.getElementById('msg');
 const btnSave = document.querySelector('.btn-save');
-let userName= '';
+let userName = '';
 
 btnSave.addEventListener('click', () => {
-    
+    const message = msg.value.trim();
+    socket.emit('save_message', { name: userName, msg: message });
+    msg.value = '';
 });
 
-btnName.addEventListener('click', ()=>{
+btnName.addEventListener('click', () => {
     userName = inputName.value;
     console.log(userName);
     userLabel.innerHTML = userName;
-    login.style.display = "none";
-    socket.emit('user_connected', {name: userName});
+    login.style.display = 'none';
+    socket.emit('user_connected', { name: userName });
 });
 
-formMsg.addEventListener('submit', (e)=>{
+formMsg.addEventListener('submit', (e) => {
     e.preventDefault();
-    socket.emit('send_msg', {name: userName, msg: msg.value})
-    msg.value = '';
+    const message = msg.value.trim();
+    if (message !== '') {
+      socket.emit('send_msg', { name: userName, msg: message });
+      msg.value = '';
+    }
 });
 
 socket.on('new_msg', message => {
